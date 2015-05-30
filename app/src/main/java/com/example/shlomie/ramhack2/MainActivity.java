@@ -2,6 +2,7 @@ package com.example.shlomie.ramhack2;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.location.Location;
@@ -12,10 +13,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 
 import at.markushi.ui.CircleButton;
@@ -23,37 +26,48 @@ import at.markushi.ui.CircleButton;
 
 public class MainActivity extends Activity {
 
+    // views
     private CircleButton button;
-    String[] APIInput = new String[2];
+    private TextView textTimer;
+
+    //objects, vars
     GPSTracker gpsTracker;
+    private int timerSeconds;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //init
         super.onCreate(savedInstanceState);
+        Data.init();
+        //set up
         setContentView(R.layout.activity_main);
+        findViews();
         btnClick();
 
     }
 
-     public void btnClick() {
+    public void findViews()
+    {
+        textTimer = (TextView) findViewById(R.id.textTimer);
         button = (CircleButton) findViewById(R.id.circleButton);
+    }
 
+     public void btnClick() {
          button.setOnClickListener(new View.OnClickListener() {
              @Override
              public void onClick(View v) {
                  button.setVisibility(View.GONE);
-
                  gpsTracker = new GPSTracker(MainActivity.this);
-                 System.out.println("Lat " + gpsTracker.getLatitude());
-                 System.out.println("Long " + gpsTracker.getLongitude());
-                 Toast.makeText(getApplicationContext(), "Your Location is - \nLat: " + gpsTracker.getLatitude() + "\nLong: " + gpsTracker.getLongitude(), Toast.LENGTH_LONG).show();
-                 APIInput[0] = "%7B%22UserID%22%3Anull%2C%22Location%22%3A%5B%7B%22LongLat%22%3A%22" + gpsTracker.getLongitude() + "%2C" + gpsTracker.getLatitude() +
-                         "%22%2C%22Date%22%3A+%22" + cal() + "%22%2C+%22Time%22%3A%22"+ cal("time")+"%22%7D%5D%0D%0A%7D";
-                 System.out.println(APIInput[0]);
-                 System.out.println(cal());
-                 //APICall client = new APICall();
-                 //client.setListener(clientListener);//pass through listener instantiated above
-                 //client.execute(APIInput[0]);
+                 String lat = "" + gpsTracker.getLatitude();
+                 String lon  = "" + gpsTracker.getLongitude();
+
+//                 Toast.makeText(getApplicationContext(), "Your Location is - \nLat: " +
+//                         gpsTracker.getLatitude() + "\nLong: " +
+//                         gpsTracker.getLongitude(),
+//                         Toast.LENGTH_LONG).show();
+
+                 Report newReport = Data.generateReport(lat, lon);
+                 (new APICall()).execute("");
              }
          });
     }
@@ -95,4 +109,16 @@ public class MainActivity extends Activity {
 
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+//        SharedPreferences sharedPref = getApplicationContext().getSharedPreferences(
+//                getString("timerSeconds"), Context.MODE_PRIVATE);
+//        timerSeconds =
+
+    }
+
+
 }
