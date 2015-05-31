@@ -11,6 +11,9 @@ public class Data {
 
     private static ArrayList<Report> myReports;
 
+    public static final int TIMER = 5;
+
+
     public static void init()
     {
         myReports = new ArrayList<Report>();
